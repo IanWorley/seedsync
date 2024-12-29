@@ -3,7 +3,7 @@ ARG STAGING_VERSION=latest
 
 # Creates environment to run Seedsync python code
 # Installs all python dependencies
-FROM python:3.8-slim as seedsync_run_python_env
+FROM python:3.13-slim as seedsync_run_python_env
 
 # Install dependencies
 RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
