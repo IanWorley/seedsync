@@ -33,7 +33,7 @@
     "ngx-modialog": "^3.0.4",
     "popper.js": "^1.14.6",
     "rxjs": "^5.4.2",
-    "zone.js": "^0.8.14"
+    "zone.js": "^0.15.0"
   },
   "devDependencies": {
     "@angular/cli": "1.3.2",
