@@ -45,7 +45,7 @@ jobs:
     needs: [ unittests-python, unittests-angular ]
     steps:
       - name: Checkout
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       # Sets up build environment
       - name: Set up QEMU
@@ -84,7 +84,7 @@ jobs:
     needs: [ unittests-python, unittests-angular ]
     steps:
       - name: Checkout
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       # Sets up build environment
       - name: Set up QEMU
@@ -187,7 +187,7 @@ jobs:
       - name: Set release env variable
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Checkout
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       # Sets up build environment
       - name: Set up QEMU
