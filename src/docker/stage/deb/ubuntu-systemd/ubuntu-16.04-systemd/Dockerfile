@@ -2,7 +2,7 @@
 # https://github.com/solita/docker-systemd/blob/master/Dockerfile
 # https://hub.docker.com/r/solita/ubuntu-systemd/
 
-FROM ubuntu:16.04
+FROM ubuntu:24.04
 
 ENV container docker
 
