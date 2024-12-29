@@ -64,18 +64,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "seedsync:build"
+            "buildTarget": "seedsync:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "seedsync:build:production"
+              "buildTarget": "seedsync:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "seedsync:build"
+            "buildTarget": "seedsync:build"
           }
         },
         "test": {
