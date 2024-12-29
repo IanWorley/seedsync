@@ -1,6 +1,6 @@
 import {BrowserModule} from "@angular/platform-browser";
 import {APP_INITIALIZER, NgModule} from "@angular/core";
-import {HttpClientModule} from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {RouteReuseStrategy, RouterModule} from "@angular/router";
 
@@ -45,8 +45,7 @@ import {DomService} from "./services/utils/dom.service";
 import {StorageServiceModule} from "angular-webstorage-service";
 import {VersionCheckService} from "./services/utils/version-check.service";
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         FileSizePipe,
         EtaPipe,
         CapitalizePipe,
@@ -64,18 +63,13 @@ import {VersionCheckService} from "./services/utils/version-check.service";
         LogsPageComponent,
         AboutPageComponent
     ],
-    imports: [
-        BrowserModule,
-        HttpClientModule,
+    bootstrap: [AppComponent], imports: [BrowserModule,
         FormsModule,
         RouterModule.forRoot(ROUTES),
-
         ModalModule.forRoot(),
         BootstrapModalModule,
-        StorageServiceModule
-    ],
-    providers: [
-        {provide: RouteReuseStrategy, useClass: CachedReuseStrategy},
+        StorageServiceModule], providers: [
+        { provide: RouteReuseStrategy, useClass: CachedReuseStrategy },
         LoggerService,
         NotificationService,
         RestService,
@@ -85,7 +79,6 @@ import {VersionCheckService} from "./services/utils/version-check.service";
         ViewFileOptionsService,
         DomService,
         VersionCheckService,
-
         // Stream services
         StreamDispatchService,
         StreamServiceRegistryProvider,
@@ -93,11 +86,9 @@ import {VersionCheckService} from "./services/utils/version-check.service";
         ModelFileService,
         ConnectedService,
         LogService,
-
         AutoQueueServiceProvider,
         ConfigServiceProvider,
         ServerCommandServiceProvider,
-
         // Initialize services not tied to any components
         {
             provide: APP_INITIALIZER,
@@ -117,9 +108,8 @@ import {VersionCheckService} from "./services/utils/version-check.service";
             deps: [VersionCheckService],
             multi: true
         },
-    ],
-    bootstrap: [AppComponent]
-})
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {
     constructor(private logger: LoggerService) {
         this.logger.level = environment.logger.level;
