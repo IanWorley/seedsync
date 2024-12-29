@@ -1,22 +1,37 @@
 # Creates environment to build python binaries
-FROM ubuntu:16.04 as seedsync_build_pyinstaller_env
-RUN apt-get update && apt-get install -y software-properties-common
-RUN add-apt-repository ppa:deadsnakes/ppa && \
+FROM ubuntu:20.04 as seedsync_build_pyinstaller_env
+
+RUN apt-get update && apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && apt-get install -y \
-    python3.8 \
-    python3.8-dev \
-    python3.8-distutils \
+    python3.11 \
+    python3.11-dev \
+    python3.11-distutils \
     curl \
-    binutils
-# Switch to Python 3.8
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
-RUN update-alternatives --set python /usr/bin/python3.8
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
-RUN update-alternatives --set python3 /usr/bin/python3.8
-# Install Poetry
+    binutils \
+    build-essential \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libffi-dev \
+    liblzma-dev \
+    gcc
+
+# Switch to Python 3.11
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
+RUN update-alternatives --set python /usr/bin/python3.11
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+RUN update-alternatives --set python3 /usr/bin/python3.11
+
+# Install pip and setuptools
 RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     python get-pip.py --force-reinstall && \
     rm get-pip.py
+RUN pip3 install --upgrade setuptools
+
+# Install Poetry
 RUN pip3 install poetry
 RUN poetry config virtualenvs.create false
 COPY src/python/pyproject.toml /app/python/
@@ -25,7 +40,6 @@ WORKDIR /python
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 RUN cd /app/python && poetry install
-
 
 # Builds seedsync with pyinstaller
 # Output is in /build/dist/seedsync/
@@ -43,21 +57,20 @@ RUN pyinstaller /python/seedsync.py \
     --hidden-import="pkg_resources.py2_warn" \
     --name seedsync
 
-
 # Builds scanfs with pyinstaller
 # Output is in /build/dist/
 FROM seedsync_build_pyinstaller_env as seedsync_build_scanfs
 COPY src/python /python
 RUN mkdir -p /build
-RUN	pyinstaller /python/scan_fs.py \
+RUN pyinstaller /python/scan_fs.py \
     -y \
     --onefile \
     -p /python \
     --distpath /build/dist \
     --workpath /build/work \
     --specpath /build \
-    --name scanfs
-
+    --name scanfs \
+    --hidden-import=_bootlocale 
 
 # Creates environment for angular
 FROM node:12.16 as seedsync_build_angular_env
@@ -72,13 +85,11 @@ COPY src/angular /app
 WORKDIR /app
 RUN node_modules/@angular/cli/bin/ng build -prod --output-path /build/dist/
 
-
 # Creates environment to build deb packages
-FROM ubuntu:16.04 as seedsync_build_deb_env
+FROM ubuntu:20.04 as seedsync_build_deb_env
 RUN apt-get update
 RUN apt-get install -y build-essential dh-systemd debhelper
 RUN apt-get install -y devscripts
-
 
 # Builds debian package
 # Output is in /build/dist/
@@ -91,7 +102,6 @@ COPY --from=seedsync_build_angular /build/dist /build/work/seedsync/html
 WORKDIR /build/work
 RUN dpkg-buildpackage -B -uc -us
 RUN ls /build/*.deb && echo "----" && ls /build/work
-
 
 # Exports deb package to host
 FROM scratch AS seedsync_build_deb_export

@@ -1,23 +1,22 @@
 [TOC]
 
-
-
 # Environment Setup
 
 ## Install dependencies
+
 1. Install [nodejs](https://joshtronic.com/2019/04/29/how-to-install-node-v12-on-debian-and-ubuntu/) (comes with npm)
 
 2. Install [Poetry](https://python-poetry.org/docs/#installation):
 
 3. Install docker and docker-compose:
-https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce
-https://docs.docker.com/compose/install/
+<https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce>
+<https://docs.docker.com/compose/install/>
 
 4. Install docker buildx
-   
-    1. https://github.com/docker/buildx/issues/132#issuecomment-582218096
-    2. https://github.com/docker/buildx/issues/132#issuecomment-636041307
-    
+
+    1. <https://github.com/docker/buildx/issues/132#issuecomment-582218096>
+    2. <https://github.com/docker/buildx/issues/132#issuecomment-636041307>
+
 5. Build dependencies
 
    ```bash
@@ -25,29 +24,34 @@ https://docs.docker.com/compose/install/
    ```
 
 6. Install the rest:
+
    ```bash
    sudo apt-get install -y lftp python3-dev rar
    ```
 
 ## Fetch code
+
 ```bash
 git clone git@gitlab.com:ipsingh06/seedsync.git
 cd seedsync
 ```
 
 ## Setup Poetry project
+
 ```bash
 cd src/python
 poetry install
 ```
 
 ## Setup angular node modules
+
 ```bash
 cd src/angular
 npm install
 ```
 
 ## Setup end-to-end tests node modules
+
 ```bash
 cd src/e2e
 npm install
@@ -73,6 +77,7 @@ npm install
    ```
 
 3. Run these commands inside the root directory.
+
    ```bash
    make clean
    make
@@ -84,30 +89,26 @@ npm install
    ```bash
    curl -X GET http://localhost:5000/v2/_catalog
    ```
-   
+
    To inspect the architectures of image:
-   
+
    ```bash
    docker buildx imagetools inspect localhost:5000/seedsync:latest
    ```
-   
+
    To use a different registry during the build process, use `STAGING_REGISTRY=`.
    For example:
-   
+
    ```bash
    make STAGING_REGISTRY=another-registry:5000
    ```
-   
+
    To build a tag other than `latest`, use `STAGING_VERSION=`.
    For example:
-   
+
    ```bash
    make STAGING_VERSION=0.0.1
    ```
-   
-   
-
-
 
 ## Python Dev Build and Run
 
@@ -125,8 +126,6 @@ mkdir -p build/config
 poetry run python seedsync.py -c build/config --html ../angular/dist --scanfs build/scanfs
 ```
 
-
-
 ## Angular Dev Build and Run
 
 ```bash
@@ -136,8 +135,6 @@ node_modules/@angular/cli/bin/ng serve
 ```
 
 Dev build will be served at [http://localhost:4200](http://localhost:4200)
-
-
 
 ## Documentation
 
@@ -157,11 +154,10 @@ poetry run mkdocs gh-deploy
 git push github gh-pages
 ```
 
-
-
 # Setup dev environment
 
 ## PyCharm
+
 1. Set project root to top-level `seedsync` directory
 
 2. Switch interpreter to virtualenv
@@ -175,8 +171,6 @@ git push github gh-pages
    | Name        | seedsync                                                     |
    | Script path | seedsync.py                                                  |
    | Parameters  | -c ./build/config --html ../angular/dist --scanfs ./build/scanfs |
-
-   
 
 # Run tests
 
@@ -243,8 +237,6 @@ For example:
 make run-tests-e2e STAGING_VERSION=latest SEEDSYNC_ARCH=arm64 STAGING_REGISTRY=ipsingh06
 ```
 
-
-
 # Release
 
 ## Continuous Integration
@@ -259,8 +251,6 @@ This method uses Github Action to post releases.
    4. Update Copyright date in `about-page.component.html`
 2. Tag the commit as vX.X.X
 3. Push tag to Github
-
-
 
 ## Manual Method
 
@@ -288,8 +278,6 @@ make docker-image-release RELEASE_VERSION=<version> RELEASE_REGISTRY=ipsingh06
 make docker-image-release RELEASE_VERSION=latest RELEASE_REGISTRY=ipsingh06
 ```
 
-
-
 # Development
 
 ## Remote Server
@@ -311,8 +299,6 @@ The connection parameters for the remote server are:
 | Pass           | remotepass                        |
 | Remote Path    | /home/remoteuser/files            |
 
-
-
 ## Run Docker Image
 
 Use the following command to run the docker image locally:
@@ -320,4 +306,3 @@ Use the following command to run the docker image locally:
 ```bash
 docker run --rm -p 8800:8800 localhost:5000/seedsync:latest
 ```
-
