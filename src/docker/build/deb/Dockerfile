@@ -1,5 +1,5 @@
 # Creates environment to build python binaries
-FROM ubuntu:16.04 as seedsync_build_pyinstaller_env
+FROM ubuntu:24.04 as seedsync_build_pyinstaller_env
 RUN apt-get update && apt-get install -y software-properties-common
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && apt-get install -y \
@@ -74,7 +74,7 @@ RUN node_modules/@angular/cli/bin/ng build -prod --output-path /build/dist/
 
 
 # Creates environment to build deb packages
-FROM ubuntu:16.04 as seedsync_build_deb_env
+FROM ubuntu:24.04 as seedsync_build_deb_env
 RUN apt-get update
 RUN apt-get install -y build-essential dh-systemd debhelper
 RUN apt-get install -y devscripts
