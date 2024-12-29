@@ -1,5 +1,5 @@
 import {Injectable, NgZone} from "@angular/core";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import EventSource = require("eventsource");
 
 import {ModelFileService} from "../files/model-file.service";
