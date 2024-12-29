@@ -18,7 +18,8 @@ import {ConfigService} from "../../services/settings/config.service";
     templateUrl: "./autoqueue-page.component.html",
     styleUrls: ["./autoqueue-page.component.scss"],
     providers: [],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class AutoQueuePageComponent implements OnInit {

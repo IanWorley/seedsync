@@ -14,7 +14,8 @@ import {ViewFileOptionsService} from "../../services/files/view-file-options.ser
     providers: [],
     templateUrl: "./file-list.component.html",
     styleUrls: ["./file-list.component.scss"],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class FileListComponent {

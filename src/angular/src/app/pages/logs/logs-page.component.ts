@@ -16,7 +16,8 @@ import {Observable} from "rxjs";
     templateUrl: "./logs-page.component.html",
     styleUrls: ["./logs-page.component.scss"],
     providers: [],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class LogsPageComponent implements OnInit, AfterContentChecked {

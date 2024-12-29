@@ -1,5 +1,5 @@
 import {BrowserModule} from "@angular/platform-browser";
-import {APP_INITIALIZER, NgModule} from "@angular/core";
+import { NgModule, inject, provideAppInitializer } from "@angular/core";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {RouteReuseStrategy, RouterModule} from "@angular/router";
@@ -90,24 +90,18 @@ import {VersionCheckService} from "./services/utils/version-check.service";
         ConfigServiceProvider,
         ServerCommandServiceProvider,
         // Initialize services not tied to any components
-        {
-            provide: APP_INITIALIZER,
-            useFactory: dummyFactory,
-            deps: [ViewFileFilterService],
-            multi: true
-        },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: dummyFactory,
-            deps: [ViewFileSortService],
-            multi: true
-        },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: dummyFactory,
-            deps: [VersionCheckService],
-            multi: true
-        },
+        provideAppInitializer(() => {
+        const initializerFn = (dummyFactory)(inject(ViewFileFilterService));
+        return initializerFn();
+      }),
+        provideAppInitializer(() => {
+        const initializerFn = (dummyFactory)(inject(ViewFileSortService));
+        return initializerFn();
+      }),
+        provideAppInitializer(() => {
+        const initializerFn = (dummyFactory)(inject(VersionCheckService));
+        return initializerFn();
+      }),
         provideHttpClient(withInterceptorsFromDi()),
     ] })
 export class AppModule {

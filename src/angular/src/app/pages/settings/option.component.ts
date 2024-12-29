@@ -8,7 +8,8 @@ import {Subject} from "rxjs";
     providers: [],
     templateUrl: "./option.component.html",
     styleUrls: ["./option.component.scss"],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class OptionComponent implements OnInit {
