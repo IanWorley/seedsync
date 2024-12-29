@@ -117,7 +117,6 @@
       }
     }
   },
-  "defaultProject": "seedsync",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
