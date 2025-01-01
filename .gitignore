@@ -2,6 +2,5 @@
 *.pyc
 /build
 .venv
-package-lock.json
 src/python/build
 src/python/site

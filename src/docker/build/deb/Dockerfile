@@ -55,6 +55,7 @@ RUN pyinstaller /python/seedsync.py \
     --specpath /build \
     --additional-hooks-dir /pyinstaller_hooks/ \
     --hidden-import="pkg_resources.py2_warn" \
+    --exclude-module _bootlocale \
     --name seedsync
 
 # Builds scanfs with pyinstaller
@@ -69,24 +70,30 @@ RUN pyinstaller /python/scan_fs.py \
     --distpath /build/dist \
     --workpath /build/work \
     --specpath /build \
-    --name scanfs \
-    --hidden-import=_bootlocale 
-
+    --exclude-module _bootlocale \
+    --name scanfs 
 # Creates environment for angular
 FROM node:12.16 as seedsync_build_angular_env
 COPY src/angular/package*.json /app/
 WORKDIR /app
+
+RUN npm cache clean --force
 RUN npm install
+
 
 # Builds angular app into html
 # Output is in /build/dist/
 FROM seedsync_build_angular_env as seedsync_build_angular
 COPY src/angular /app
 WORKDIR /app
+RUN mkdir -p /build/dist
+
+
 RUN node_modules/@angular/cli/bin/ng build -prod --output-path /build/dist/
 
 # Creates environment to build deb packages
 FROM ubuntu:20.04 as seedsync_build_deb_env
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 RUN apt-get install -y build-essential dh-systemd debhelper
 RUN apt-get install -y devscripts

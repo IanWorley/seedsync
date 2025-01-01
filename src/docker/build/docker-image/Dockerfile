@@ -3,24 +3,25 @@ ARG STAGING_VERSION=latest
 
 # Creates environment to run Seedsync python code
 # Installs all python dependencies
-FROM python:3.8-slim as seedsync_run_python_env
+FROM  python:3.11-slim as seedsync_run_python_env
 
 # Install dependencies
-RUN sed -i -e's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
+RUN [ -f /etc/apt/sources.list ] || echo 'deb http://deb.debian.org/debian bullseye main' > /etc/apt/sources.list && \
+    sed -i -e 's/ main/ main contrib non-free/g' /etc/apt/sources.list && \
     apt-get update && \
     apt-get install -y \
-        gcc \
-        libssl-dev \
-        lftp \
-        openssh-client \
-        p7zip \
-        p7zip-full \
-        p7zip-rar \
-        bzip2 \
-        curl \
-        libnss-wrapper \
-        libxml2-dev libxslt-dev libffi-dev \
-    && apt-get clean
+    gcc \
+    libssl-dev \
+    lftp \
+    openssh-client \
+    p7zip \
+    p7zip-full \
+    p7zip-rar \
+    bzip2 \
+    curl \
+    libnss-wrapper \
+    libxml2-dev libxslt-dev libffi-dev && \
+    apt-get clean
 # Fix for patoolib
 # See: https://github.com/wummel/patool/issues/90
 RUN ln -s /usr/lib/p7zip/Codecs/Rar.so /usr/lib/p7zip/Codecs/Rar29.so
@@ -54,8 +55,8 @@ COPY src/python /app/python
 
 
 # Full Seedsync docker image
-FROM ${STAGING_REGISTRY}/seedsync/build/angular/export:${STAGING_VERSION} as seedsync_build_angular_export
-FROM ${STAGING_REGISTRY}/seedsync/build/scanfs/export:${STAGING_VERSION} as seedsync_build_scanfs_export
+FROM   ${STAGING_REGISTRY}/seedsync/build/angular/export:${STAGING_VERSION} as seedsync_build_angular_export
+FROM   ${STAGING_REGISTRY}/seedsync/build/scanfs/export:${STAGING_VERSION} as seedsync_build_scanfs_export
 FROM seedsync_run_python as seedsync_run
 COPY --from=seedsync_build_angular_export /html /app/html
 COPY --from=seedsync_build_scanfs_export /scanfs /app/scanfs
@@ -96,6 +97,6 @@ CMD [ \
     "-c", "/config", \
     "--html", "/app/html", \
     "--scanfs", "/app/scanfs" \
-]
+    ]
 
 EXPOSE 8800

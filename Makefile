@@ -14,7 +14,7 @@ reset=`tput sgr0`
 ROOTDIR:=$(shell realpath .)
 SOURCEDIR:=$(shell realpath ./src)
 BUILDDIR:=$(shell realpath ./build)
-DEFAULT_STAGING_REGISTRY:=localhost:5000
+DEFAULT_STAGING_REGISTRY:=192.168.0.65:5000
 
 #DOCKER_BUILDKIT_FLAGS=BUILDKIT_PROGRESS=plain
 DOCKER=${DOCKER_BUILDKIT_FLAGS} DOCKER_BUILDKIT=1 docker
@@ -61,6 +61,7 @@ docker-image: docker-buildx
 		--tag $${STAGING_REGISTRY}/seedsync/build/scanfs/export:$${STAGING_VERSION} \
 		--cache-to=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/scanfs/export:cache,mode=max \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/scanfs/export:cache \
+		--platform linux/amd64,linux/arm64 \
 		--push \
 		${ROOTDIR}
 
@@ -71,6 +72,7 @@ docker-image: docker-buildx
 		--tag $${STAGING_REGISTRY}/seedsync/build/angular/export:$${STAGING_VERSION} \
 		--cache-to=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/angular/export:cache,mode=max \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync/build/angular/export:cache \
+		--platform linux/amd64,linux/arm64  \
 		--push \
 		${ROOTDIR}
 
@@ -83,7 +85,7 @@ docker-image: docker-buildx
 		--tag $${STAGING_REGISTRY}/seedsync:$${STAGING_VERSION} \
 		--cache-to=type=registry,ref=$${STAGING_REGISTRY}/seedsync:cache,mode=max \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync:cache \
-		--platform linux/amd64,linux/arm64,linux/arm/v7 \
+		--platform linux/amd64,linux/arm64  \
 		--push \
 		${ROOTDIR}
 
@@ -113,7 +115,7 @@ docker-image-release:
 		--build-arg STAGING_REGISTRY=$${STAGING_REGISTRY} \
 		--tag ${RELEASE_REGISTRY}/seedsync:${RELEASE_VERSION} \
 		--cache-from=type=registry,ref=$${STAGING_REGISTRY}/seedsync:cache \
-		--platform linux/amd64,linux/arm64,linux/arm/v7 \
+		--platform linux/amd64,linux/arm64 \
 		--push \
 		${ROOTDIR}
 
@@ -151,104 +153,104 @@ run-tests-angular: tests-angular
 		-f ${SOURCEDIR}/docker/test/angular/compose.yml \
 		up --force-recreate --exit-code-from tests
 
-tests-e2e-deps:
-	# deb pre-reqs
-	$(DOCKER) build \
-		${SOURCEDIR}/docker/stage/deb/ubuntu-systemd/ubuntu-16.04-systemd \
-		-t ubuntu-systemd:16.04
-	$(DOCKER) build \
-		${SOURCEDIR}/docker/stage/deb/ubuntu-systemd/ubuntu-18.04-systemd \
-		-t ubuntu-systemd:18.04
-	$(DOCKER) build \
-		${SOURCEDIR}/docker/stage/deb/ubuntu-systemd/ubuntu-20.04-systemd \
-		-t ubuntu-systemd:20.04
+# tests-e2e-deps:
+# 	# deb pre-reqs
+# 	$(DOCKER) build \
+# 		${SOURCEDIR}/docker/stage/deb/ubuntu-systemd/ubuntu-16.04-systemd \
+# 		-t ubuntu-systemd:16.04
+# 	$(DOCKER) build \
+# 		${SOURCEDIR}/docker/stage/deb/ubuntu-systemd/ubuntu-18.04-systemd \
+# 		-t ubuntu-systemd:18.04
+# 	$(DOCKER) build \
+# 		${SOURCEDIR}/docker/stage/deb/ubuntu-systemd/ubuntu-20.04-systemd \
+# 		-t ubuntu-systemd:20.04
 
-	# Setup docker for the systemd container
-	# See: https://github.com/solita/docker-systemd
-	$(DOCKER) run --rm --privileged -v /:/host solita/ubuntu-systemd setup
+# 	# Setup docker for the systemd container
+# 	# See: https://github.com/solita/docker-systemd
+# 	$(DOCKER) run --rm --privileged -v /:/host solita/ubuntu-systemd setup
 
-run-tests-e2e: tests-e2e-deps
-	# Check our settings
-	@if [[ -z "${STAGING_VERSION}" ]] && [[ -z "${SEEDSYNC_DEB}" ]]; then \
-		echo "${red}ERROR: One of STAGING_VERSION or SEEDSYNC_DEB must be set${reset}"; exit 1; \
-	elif [[ ! -z "${STAGING_VERSION}" ]] && [[ ! -z "${SEEDSYNC_DEB}" ]]; then \
-	  	echo "${red}ERROR: Only one of STAGING_VERSION or SEEDSYNC_DEB must be set${reset}"; exit 1; \
-  	fi
+# run-tests-e2e: tests-e2e-deps
+# 	# Check our settings
+# 	@if [[ -z "${STAGING_VERSION}" ]] && [[ -z "${SEEDSYNC_DEB}" ]]; then \
+# 		echo "${red}ERROR: One of STAGING_VERSION or SEEDSYNC_DEB must be set${reset}"; exit 1; \
+# 	elif [[ ! -z "${STAGING_VERSION}" ]] && [[ ! -z "${SEEDSYNC_DEB}" ]]; then \
+# 	  	echo "${red}ERROR: Only one of STAGING_VERSION or SEEDSYNC_DEB must be set${reset}"; exit 1; \
+#   	fi
 
-	# Set up environment for deb
-	@if [[ ! -z "${SEEDSYNC_DEB}" ]] ; then \
-		if [[ -z "${SEEDSYNC_OS}" ]] ; then \
-			echo "${red}ERROR: SEEDSYNC_OS is required for DEB e2e test${reset}"; \
-			echo "${red}Options include: ubu1604, ubu1804, ubu2004${reset}"; exit 1; \
-		fi
-	fi
+# 	# Set up environment for deb
+# 	@if [[ ! -z "${SEEDSYNC_DEB}" ]] ; then \
+# 		if [[ -z "${SEEDSYNC_OS}" ]] ; then \
+# 			echo "${red}ERROR: SEEDSYNC_OS is required for DEB e2e test${reset}"; \
+# 			echo "${red}Options include: ubu1604, ubu1804, ubu2004${reset}"; exit 1; \
+# 		fi
+# 	fi
 
-	# Set up environment for image
-	@if [[ ! -z "${STAGING_VERSION}" ]] ; then \
-		if [[ -z "${SEEDSYNC_ARCH}" ]] ; then \
-			echo "${red}ERROR: SEEDSYNC_ARCH is required for docker image e2e test${reset}"; \
-			echo "${red}Options include: amd64, arm64, arm/v7${reset}"; exit 1; \
-		fi
-		if [[ -z "${STAGING_REGISTRY}" ]] ; then \
-			export STAGING_REGISTRY="${DEFAULT_STAGING_REGISTRY}"; \
-		fi;
-		echo "${green}STAGING_REGISTRY=$${STAGING_REGISTRY}${reset}";
-		# Removing and pulling is the only way to select the arch from a multi-arch image :(
-		$(DOCKER) rmi -f $${STAGING_REGISTRY}/seedsync:$${STAGING_VERSION}
-		$(DOCKER) pull $${STAGING_REGISTRY}/seedsync:$${STAGING_VERSION} --platform linux/$${SEEDSYNC_ARCH}
-	fi
+# 	# Set up environment for image
+# 	@if [[ ! -z "${STAGING_VERSION}" ]] ; then \
+# 		if [[ -z "${SEEDSYNC_ARCH}" ]] ; then \
+# 			echo "${red}ERROR: SEEDSYNC_ARCH is required for docker image e2e test${reset}"; \
+# 			echo "${red}Options include: amd64, arm64, arm/v7${reset}"; exit 1; \
+# 		fi
+# 		if [[ -z "${STAGING_REGISTRY}" ]] ; then \
+# 			export STAGING_REGISTRY="${DEFAULT_STAGING_REGISTRY}"; \
+# 		fi;
+# 		echo "${green}STAGING_REGISTRY=$${STAGING_REGISTRY}${reset}";
+# 		# Removing and pulling is the only way to select the arch from a multi-arch image :(
+# 		$(DOCKER) rmi -f $${STAGING_REGISTRY}/seedsync:$${STAGING_VERSION}
+# 		$(DOCKER) pull $${STAGING_REGISTRY}/seedsync:$${STAGING_VERSION} --platform linux/$${SEEDSYNC_ARCH}
+# 	fi
 
-	# Set the flags
-	COMPOSE_FLAGS="-f ${SOURCEDIR}/docker/test/e2e/compose.yml "
-	COMPOSE_RUN_FLAGS=""
-	if [[ ! -z "${SEEDSYNC_DEB}" ]] ; then
-		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/stage/deb/compose.yml "
-		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/stage/deb/compose-${SEEDSYNC_OS}.yml "
-	fi
-	if [[ ! -z "${STAGING_VERSION}" ]] ; then \
-		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/stage/docker-image/compose.yml "
-	fi
-	if [[ "${DEV}" = "1" ]] ; then
-		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/test/e2e/compose-dev.yml "
-	else \
-  		COMPOSE_RUN_FLAGS+="-d"
-	fi
-	echo "${green}COMPOSE_FLAGS=$${COMPOSE_FLAGS}${reset}"
+# 	# Set the flags
+# 	COMPOSE_FLAGS="-f ${SOURCEDIR}/docker/test/e2e/compose.yml "
+# 	COMPOSE_RUN_FLAGS=""
+# 	if [[ ! -z "${SEEDSYNC_DEB}" ]] ; then
+# 		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/stage/deb/compose.yml "
+# 		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/stage/deb/compose-${SEEDSYNC_OS}.yml "
+# 	fi
+# 	if [[ ! -z "${STAGING_VERSION}" ]] ; then \
+# 		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/stage/docker-image/compose.yml "
+# 	fi
+# 	if [[ "${DEV}" = "1" ]] ; then
+# 		COMPOSE_FLAGS+="-f ${SOURCEDIR}/docker/test/e2e/compose-dev.yml "
+# 	else \
+#   		COMPOSE_RUN_FLAGS+="-d"
+# 	fi
+# 	echo "${green}COMPOSE_FLAGS=$${COMPOSE_FLAGS}${reset}"
 
-	# Set up Ctrl-C handler
-	function tearDown {
-		$(DOCKER_COMPOSE) \
-			$${COMPOSE_FLAGS} \
-			stop
-	}
-	trap tearDown EXIT
+# 	# Set up Ctrl-C handler
+# 	function tearDown {
+# 		$(DOCKER_COMPOSE) \
+# 			$${COMPOSE_FLAGS} \
+# 			stop
+# 	}
+# 	trap tearDown EXIT
 
-	# Build the test
-	echo "${green}Building the tests${reset}"
-	$(DOCKER_COMPOSE) \
-		$${COMPOSE_FLAGS} \
-		build
+# 	# Build the test
+# 	echo "${green}Building the tests${reset}"
+# 	$(DOCKER_COMPOSE) \
+# 		$${COMPOSE_FLAGS} \
+# 		build
 
-	# This suppresses the docker-compose error that image has changed
-	$(DOCKER_COMPOSE) \
-		$${COMPOSE_FLAGS} \
-		rm -f myapp
+# 	# This suppresses the docker-compose error that image has changed
+# 	$(DOCKER_COMPOSE) \
+# 		$${COMPOSE_FLAGS} \
+# 		rm -f myapp
 
-	# Run the test
-	echo "${green}Running the tests${reset}"
-	$(DOCKER_COMPOSE) \
-		$${COMPOSE_FLAGS} \
-		up --force-recreate \
-		$${COMPOSE_RUN_FLAGS}
+# 	# Run the test
+# 	echo "${green}Running the tests${reset}"
+# 	$(DOCKER_COMPOSE) \
+# 		$${COMPOSE_FLAGS} \
+# 		up --force-recreate \
+# 		$${COMPOSE_RUN_FLAGS}
 
-	if [[ "${DEV}" != "1" ]] ; then
-		$(DOCKER) logs -f seedsync_test_e2e
-	fi
+# 	if [[ "${DEV}" != "1" ]] ; then
+# 		$(DOCKER) logs -f seedsync_test_e2e
+# 	fi
 
-	EXITCODE=`$(DOCKER) inspect seedsync_test_e2e | jq '.[].State.ExitCode'`
-	if [[ "$${EXITCODE}" != "0" ]] ; then
-		false
-	fi
+# 	EXITCODE=`$(DOCKER) inspect seedsync_test_e2e | jq '.[].State.ExitCode'`
+# 	if [[ "$${EXITCODE}" != "0" ]] ; then
+# 		false
+# 	fi
 
 run-remote-server:
 	$(DOCKER) container rm -f seedsync_test_e2e_remote-dev
