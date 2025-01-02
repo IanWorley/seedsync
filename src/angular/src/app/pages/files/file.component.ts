@@ -1,23 +1,26 @@
 import {
-    Component, Input, Output, ChangeDetectionStrategy,
-    EventEmitter, OnChanges, SimpleChanges, ViewChild
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    Output,
+    SimpleChanges,
+    ViewChild,
 } from "@angular/core";
 
-import {Modal} from "ngx-modialog/plugins/bootstrap";
-
-import {ViewFile} from "../../services/files/view-file";
-import {Localization} from "../../common/localization";
-import {ViewFileOptions} from "../../services/files/view-file-options";
+import { Localization } from "../../common/localization";
+import { ViewFile } from "../../services/files/view-file";
+import { ViewFileOptions } from "../../services/files/view-file-options";
 
 @Component({
     selector: "app-file",
     providers: [],
     templateUrl: "./file.component.html",
-    styleUrls: ["./file.component.scss"],
+    styleUrls: ["./file.component.css"],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
-
 export class FileComponent implements OnChanges {
     // Make ViewFile optionType accessible from template
     ViewFile = ViewFile;
@@ -43,41 +46,61 @@ export class FileComponent implements OnChanges {
     // Indicates an active action on-going
     activeAction: FileAction = null;
 
-    constructor(private modal: Modal) {}
+    constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
         // Check for status changes
         const oldFile: ViewFile = changes.file.previousValue;
         const newFile: ViewFile = changes.file.currentValue;
-        if (oldFile != null && newFile != null && oldFile.status !== newFile.status) {
+        if (
+            oldFile != null &&
+            newFile != null &&
+            oldFile.status !== newFile.status
+        ) {
             // Reset any active action
             this.activeAction = null;
 
             // Scroll into view if this file is selected and not already in viewport
-            if (newFile.isSelected && !FileComponent.isElementInViewport(this.fileElement.nativeElement)) {
+            if (
+                newFile.isSelected &&
+                !FileComponent.isElementInViewport(
+                    this.fileElement.nativeElement
+                )
+            ) {
                 this.fileElement.nativeElement.scrollIntoView();
             }
         }
     }
 
-    showDeleteConfirmation(title: string, message: string, callback: () => void) {
-        const dialogRef = this.modal.confirm()
-            .title(title)
-            .okBtn("Delete")
-            .okBtnClass("btn btn-danger")
-            .cancelBtn("Cancel")
-            .cancelBtnClass("btn btn-secondary")
-            .isBlocking(false)
-            .showClose(false)
-            .body(message)
-            .open();
+    showDeleteConfirmation(
+        title: string,
+        message: string,
+        callback: () => void
+    ) {
+        // const dialogRef = this.modal
+        //     .confirm()
+        //     .title(title)
+        //     .okBtn("Delete")
+        //     .okBtnClass("btn btn-danger")
+        //     .cancelBtn("Cancel")
+        //     .cancelBtnClass("btn btn-secondary")
+        //     .isBlocking(false)
+        //     .showClose(false)
+        //     .body(message)
+        //     .open();
 
-        dialogRef.then( dRef => {
-           dRef.result.then(
-               () => { callback(); },
-               () => { return; }
-           );
-        });
+        // dialogRef.then((dRef) => {
+        //     dRef.result.then(
+        //         () => {
+        //             callback();
+        //         },
+        //         () => {
+        //             return;
+        //         }
+        //     );
+
+        callback();
+        // });
     }
 
     isQueueable() {
@@ -89,7 +112,11 @@ export class FileComponent implements OnChanges {
     }
 
     isExtractable() {
-        return this.activeAction == null && this.file.isExtractable && this.file.isArchive;
+        return (
+            this.activeAction == null &&
+            this.file.isExtractable &&
+            this.file.isArchive
+        );
     }
 
     isLocallyDeletable() {
@@ -143,13 +170,19 @@ export class FileComponent implements OnChanges {
     }
 
     // Source: https://stackoverflow.com/a/7557433
-    private static isElementInViewport (el) {
+    private static isElementInViewport(el) {
         const rect = el.getBoundingClientRect();
         return (
             rect.top >= 0 &&
             rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+            rect.bottom <=
+                (window.innerHeight ||
+                    document.documentElement
+                        .clientHeight) /*or $(window).height() */ &&
+            rect.right <=
+                (window.innerWidth ||
+                    document.documentElement
+                        .clientWidth) /*or $(window).width() */
         );
     }
 }
@@ -159,5 +192,5 @@ export enum FileAction {
     STOP,
     EXTRACT,
     DELETE_LOCAL,
-    DELETE_REMOTE
+    DELETE_REMOTE,
 }

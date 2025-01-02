@@ -1,31 +1,32 @@
-import {Component, ChangeDetectionStrategy} from "@angular/core";
-import {Observable} from "rxjs";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { Observable } from "rxjs";
 
-import {List} from "immutable";
+import { List } from "immutable";
 
-import {ViewFileService} from "../../services/files/view-file.service";
-import {ViewFile} from "../../services/files/view-file";
-import {LoggerService} from "../../services/utils/logger.service";
-import {ViewFileOptions} from "../../services/files/view-file-options";
-import {ViewFileOptionsService} from "../../services/files/view-file-options.service";
+import { ViewFile } from "../../services/files/view-file";
+import { ViewFileOptions } from "../../services/files/view-file-options";
+import { ViewFileOptionsService } from "../../services/files/view-file-options.service";
+import { ViewFileService } from "../../services/files/view-file.service";
+import { LoggerService } from "../../services/utils/logger.service";
 
 @Component({
     selector: "app-file-list",
     providers: [],
     templateUrl: "./file-list.component.html",
-    styleUrls: ["./file-list.component.scss"],
+    styleUrls: ["./file-list.component.css"],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
-
 export class FileListComponent {
     public files: Observable<List<ViewFile>>;
     public identify = FileListComponent.identify;
     public options: Observable<ViewFileOptions>;
 
-    constructor(private _logger: LoggerService,
-                private viewFileService: ViewFileService,
-                private viewFileOptionsService: ViewFileOptionsService) {
+    constructor(
+        private _logger: LoggerService,
+        private viewFileService: ViewFileService,
+        private viewFileOptionsService: ViewFileOptionsService
+    ) {
         this.files = viewFileService.filteredFiles;
         this.options = this.viewFileOptionsService.options;
     }
@@ -49,31 +50,31 @@ export class FileListComponent {
     }
 
     onQueue(file: ViewFile) {
-        this.viewFileService.queue(file).subscribe(data => {
+        this.viewFileService.queue(file).subscribe((data) => {
             this._logger.info(data);
         });
     }
 
     onStop(file: ViewFile) {
-        this.viewFileService.stop(file).subscribe(data => {
+        this.viewFileService.stop(file).subscribe((data) => {
             this._logger.info(data);
         });
     }
 
     onExtract(file: ViewFile) {
-        this.viewFileService.extract(file).subscribe(data => {
+        this.viewFileService.extract(file).subscribe((data) => {
             this._logger.info(data);
         });
     }
 
     onDeleteLocal(file: ViewFile) {
-        this.viewFileService.deleteLocal(file).subscribe(data => {
+        this.viewFileService.deleteLocal(file).subscribe((data) => {
             this._logger.info(data);
         });
     }
 
     onDeleteRemote(file: ViewFile) {
-        this.viewFileService.deleteRemote(file).subscribe(data => {
+        this.viewFileService.deleteRemote(file).subscribe((data) => {
             this._logger.info(data);
         });
     }

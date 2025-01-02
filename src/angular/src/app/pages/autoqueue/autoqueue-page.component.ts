@@ -1,30 +1,31 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from "@angular/core";
-import {Observable} from "rxjs";
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnInit,
+} from "@angular/core";
+import { Observable } from "rxjs";
 
-import * as Immutable from "immutable";
-
-import {AutoQueueService} from "../../services/autoqueue/autoqueue.service";
-import {AutoQueuePattern} from "../../services/autoqueue/autoqueue-pattern";
-import {Notification} from "../../services/utils/notification";
-import {NotificationService} from "../../services/utils/notification.service";
-import {ConnectedService} from "../../services/utils/connected.service";
-import {StreamServiceRegistry} from "../../services/base/stream-service.registry";
-import {Config} from "../../services/settings/config";
-import {ConfigService} from "../../services/settings/config.service";
-
+import { List } from "immutable";
+import { AutoQueuePattern } from "../../services/autoqueue/autoqueue-pattern";
+import { AutoQueueService } from "../../services/autoqueue/autoqueue.service";
+import { StreamServiceRegistry } from "../../services/base/stream-service.registry";
+import { Config } from "../../services/settings/config";
+import { ConfigService } from "../../services/settings/config.service";
+import { ConnectedService } from "../../services/utils/connected.service";
+import { Notification } from "../../services/utils/notification";
+import { NotificationService } from "../../services/utils/notification.service";
 
 @Component({
     selector: "app-autoqueue-page",
     templateUrl: "./autoqueue-page.component.html",
-    styleUrls: ["./autoqueue-page.component.scss"],
+    styleUrls: ["./autoqueue-page.component.css"],
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
-
 export class AutoQueuePageComponent implements OnInit {
-
-    public patterns: Observable<Immutable.List<AutoQueuePattern>>;
+    public patterns: Observable<List<AutoQueuePattern>>;
     public newPattern: string;
 
     public config: Observable<Config>;
@@ -35,11 +36,13 @@ export class AutoQueuePageComponent implements OnInit {
 
     private _connectedService: ConnectedService;
 
-    constructor(private _changeDetector: ChangeDetectorRef,
-                private _autoqueueService: AutoQueueService,
-                private _notifService: NotificationService,
-                private _configService: ConfigService,
-                _streamServiceRegistry: StreamServiceRegistry) {
+    constructor(
+        private _changeDetector: ChangeDetectorRef,
+        private _autoqueueService: AutoQueueService,
+        private _notifService: NotificationService,
+        private _configService: ConfigService,
+        _streamServiceRegistry: StreamServiceRegistry
+    ) {
         this._connectedService = _streamServiceRegistry.connectedService;
         this.patterns = _autoqueueService.patterns;
         this.newPattern = "";
@@ -57,12 +60,12 @@ export class AutoQueuePageComponent implements OnInit {
                     // Clear the input box
                     this.newPattern = "";
                 }
-            }
+            },
         });
 
         this._configService.config.subscribe({
-            next: config => {
-                if(config != null) {
+            next: (config) => {
+                if (config != null) {
                     this.enabled = config.autoqueue.enabled;
                     this.patternsOnly = config.autoqueue.patterns_only;
                 } else {
@@ -70,13 +73,13 @@ export class AutoQueuePageComponent implements OnInit {
                     this.patternsOnly = false;
                 }
                 this._changeDetector.detectChanges();
-            }
+            },
         });
     }
 
     onAddPattern() {
         this._autoqueueService.add(this.newPattern).subscribe({
-            next: reaction => {
+            next: (reaction) => {
                 if (reaction.success) {
                     // Clear the input box
                     this.newPattern = "";
@@ -85,17 +88,17 @@ export class AutoQueuePageComponent implements OnInit {
                     const notif = new Notification({
                         level: Notification.Level.DANGER,
                         dismissible: true,
-                        text: reaction.errorMessage
+                        text: reaction.errorMessage,
                     });
                     this._notifService.show(notif);
                 }
-            }
+            },
         });
     }
 
     onRemovePattern(pattern: AutoQueuePattern) {
         this._autoqueueService.remove(pattern.pattern).subscribe({
-            next: reaction => {
+            next: (reaction) => {
                 if (reaction.success) {
                     // Nothing to do
                 } else {
@@ -103,11 +106,11 @@ export class AutoQueuePageComponent implements OnInit {
                     const notif = new Notification({
                         level: Notification.Level.DANGER,
                         dismissible: true,
-                        text: reaction.errorMessage
+                        text: reaction.errorMessage,
                     });
                     this._notifService.show(notif);
                 }
-            }
+            },
         });
     }
 }

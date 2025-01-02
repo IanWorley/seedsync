@@ -6,15 +6,9 @@
         <div class="eta">ETA</div>
         <div class="size">Size</div>
     </div>
-    <div *ngFor="let file of files | async; trackBy: identify">
-        <app-file
-            [file]="file"
-            [options]="options"
-            (click)="onSelect(file)"
-            (queueEvent)="onQueue($event)"
-            (stopEvent)="onStop($event)"
-            (extractEvent)="onExtract($event)"
-            (deleteLocalEvent)="onDeleteLocal($event)"
+    <div *ngFor="let file of (files | async)?.toArray(); trackBy: identify">
+        <app-file [file]="file" [options]="options | async" (click)="onSelect(file)" (queueEvent)="onQueue($event)"
+            (stopEvent)="onStop($event)" (extractEvent)="onExtract($event)" (deleteLocalEvent)="onDeleteLocal($event)"
             (deleteRemoteEvent)="onDeleteRemote($event)">
         </app-file>
     </div>

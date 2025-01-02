@@ -1,29 +1,32 @@
-import {ChangeDetectionStrategy, Component, OnInit} from "@angular/core";
-import {Observable} from "rxjs";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { Observable } from "rxjs";
 
-import {LoggerService} from "../../services/utils/logger.service";
-import {ConfigService} from "../../services/settings/config.service";
-import {Config} from "../../services/settings/config";
-import {Notification} from "../../services/utils/notification";
-import {Localization} from "../../common/localization";
-import {NotificationService} from "../../services/utils/notification.service";
-import {ServerCommandService} from "../../services/server/server-command.service";
+import { Localization } from "../../common/localization";
+import { StreamServiceRegistry } from "../../services/base/stream-service.registry";
+import { ServerCommandService } from "../../services/server/server-command.service";
+import { Config } from "../../services/settings/config";
+import { ConfigService } from "../../services/settings/config.service";
+import { ConnectedService } from "../../services/utils/connected.service";
+import { LoggerService } from "../../services/utils/logger.service";
+import { Notification } from "../../services/utils/notification";
+import { NotificationService } from "../../services/utils/notification.service";
 import {
-    OPTIONS_CONTEXT_CONNECTIONS, OPTIONS_CONTEXT_DISCOVERY, OPTIONS_CONTEXT_OTHER,
-    OPTIONS_CONTEXT_SERVER, OPTIONS_CONTEXT_AUTOQUEUE, OPTIONS_CONTEXT_EXTRACT
+    OPTIONS_CONTEXT_AUTOQUEUE,
+    OPTIONS_CONTEXT_CONNECTIONS,
+    OPTIONS_CONTEXT_DISCOVERY,
+    OPTIONS_CONTEXT_EXTRACT,
+    OPTIONS_CONTEXT_OTHER,
+    OPTIONS_CONTEXT_SERVER,
 } from "./options-list";
-import {ConnectedService} from "../../services/utils/connected.service";
-import {StreamServiceRegistry} from "../../services/base/stream-service.registry";
 
 @Component({
     selector: "app-settings-page",
     templateUrl: "./settings-page.component.html",
-    styleUrls: ["./settings-page.component.scss"],
+    styleUrls: ["./settings-page.component.css"],
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
-
 export class SettingsPageComponent implements OnInit {
     public OPTIONS_CONTEXT_SERVER = OPTIONS_CONTEXT_SERVER;
     public OPTIONS_CONTEXT_DISCOVERY = OPTIONS_CONTEXT_DISCOVERY;
@@ -41,17 +44,19 @@ export class SettingsPageComponent implements OnInit {
     private _configRestartNotif: Notification;
     private _badValueNotifs: Map<string, Notification>;
 
-    constructor(private _logger: LoggerService,
-                _streamServiceRegistry: StreamServiceRegistry,
-                private _configService: ConfigService,
-                private _notifService: NotificationService,
-                private _commandService: ServerCommandService) {
+    constructor(
+        private _logger: LoggerService,
+        _streamServiceRegistry: StreamServiceRegistry,
+        private _configService: ConfigService,
+        private _notifService: NotificationService,
+        private _commandService: ServerCommandService
+    ) {
         this._connectedService = _streamServiceRegistry.connectedService;
         this.config = _configService.config;
         this.commandsEnabled = false;
         this._configRestartNotif = new Notification({
             level: Notification.Level.INFO,
-            text: Localization.Notification.CONFIG_RESTART
+            text: Localization.Notification.CONFIG_RESTART,
         });
         this._badValueNotifs = new Map();
     }
@@ -67,20 +72,22 @@ export class SettingsPageComponent implements OnInit {
 
                 // Enable/disable commands based on server connection
                 this.commandsEnabled = connected;
-            }
+            },
         });
     }
 
     onSetConfig(section: string, option: string, value: any) {
         this._configService.set(section, option, value).subscribe({
-            next: reaction => {
+            next: (reaction) => {
                 const notifKey = section + "." + option;
                 if (reaction.success) {
                     this._logger.info(reaction.data);
 
                     // Hide bad value notification, if any
                     if (this._badValueNotifs.has(notifKey)) {
-                        this._notifService.hide(this._badValueNotifs.get(notifKey));
+                        this._notifService.hide(
+                            this._badValueNotifs.get(notifKey)
+                        );
                         this._badValueNotifs.delete(notifKey);
                     }
 
@@ -91,29 +98,31 @@ export class SettingsPageComponent implements OnInit {
                     const notif = new Notification({
                         level: Notification.Level.DANGER,
                         dismissible: true,
-                        text: reaction.errorMessage
+                        text: reaction.errorMessage,
                     });
                     if (this._badValueNotifs.has(notifKey)) {
-                        this._notifService.hide(this._badValueNotifs.get(notifKey));
+                        this._notifService.hide(
+                            this._badValueNotifs.get(notifKey)
+                        );
                     }
                     this._notifService.show(notif);
                     this._badValueNotifs.set(notifKey, notif);
 
                     this._logger.error(reaction.errorMessage);
                 }
-            }
+            },
         });
     }
 
     onCommandRestart() {
         this._commandService.restart().subscribe({
-            next: reaction => {
+            next: (reaction) => {
                 if (reaction.success) {
                     this._logger.info(reaction.data);
                 } else {
                     this._logger.error(reaction.errorMessage);
                 }
-            }
+            },
         });
     }
 }

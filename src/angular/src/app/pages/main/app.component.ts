@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    OnInit,
+    ViewChild,
+} from "@angular/core";
 import { NavigationEnd, Router } from "@angular/router";
 import { ROUTE_INFOS, RouteInfo } from "../../routes";
 
@@ -8,8 +14,8 @@ import { DomService } from "../../services/utils/dom.service";
 @Component({
     selector: "app-root",
     templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"],
-    standalone: false
+    styleUrls: ["./app.component.css"],
+    standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild("topHeader") topHeader: ElementRef;
@@ -17,14 +23,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     showSidebar = false;
     activeRoute: RouteInfo;
 
-    constructor(private router: Router,
-                private _domService: DomService) {
+    constructor(private router: Router, private _domService: DomService) {
         // Navigation listener
         //    Close the sidebar
         //    Store the active route
         router.events.subscribe(() => {
             this.showSidebar = false;
-            this.activeRoute = ROUTE_INFOS.find(value => "/" + value.path === router.url);
+            this.activeRoute = ROUTE_INFOS.find(
+                (value) => "/" + value.path === router.url
+            );
         });
     }
 
@@ -43,7 +50,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         ElementQueries.init();
         // noinspection TsLint
         new ResizeSensor(this.topHeader.nativeElement, () => {
-            this._domService.setHeaderHeight(this.topHeader.nativeElement.clientHeight);
+            this._domService.setHeaderHeight(
+                this.topHeader.nativeElement.clientHeight
+            );
         });
     }
 

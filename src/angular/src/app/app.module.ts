@@ -1,51 +1,54 @@
-import {BrowserModule} from "@angular/platform-browser";
+import {
+    provideHttpClient,
+    withInterceptorsFromDi,
+} from "@angular/common/http";
 import { NgModule, inject, provideAppInitializer } from "@angular/core";
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-import {FormsModule} from "@angular/forms";
-import {RouteReuseStrategy, RouterModule} from "@angular/router";
+import { FormsModule } from "@angular/forms";
+import { BrowserModule } from "@angular/platform-browser";
+import { RouteReuseStrategy, RouterModule } from "@angular/router";
 
-import {ModalModule} from "ngx-modialog";
-import {bootstrap4Mode, BootstrapModalModule} from "ngx-modialog/plugins/bootstrap";
+import { StorageServiceModule } from "ngx-webstorage-service";
+import { environment } from "../environments/environment";
+import { CachedReuseStrategy } from "./common/cached-reuse-strategy";
+import { CapitalizePipe } from "./common/capitalize.pipe";
+import { ClickStopPropagationDirective } from "./common/click-stop-propagation.directive";
+import { EtaPipe } from "./common/eta.pipe";
+import { FileSizePipe } from "./common/file-size.pipe";
+import { AboutPageComponent } from "./pages/about/about-page.component";
+import { AutoQueuePageComponent } from "./pages/autoqueue/autoqueue-page.component";
+import { FileListComponent } from "./pages/files/file-list.component";
+import { FileOptionsComponent } from "./pages/files/file-options.component";
+import { FileComponent } from "./pages/files/file.component";
+import { FilesPageComponent } from "./pages/files/files-page.component";
+import { LogsPageComponent } from "./pages/logs/logs-page.component";
+import { AppComponent } from "./pages/main/app.component";
+import { HeaderComponent } from "./pages/main/header.component";
+import { SidebarComponent } from "./pages/main/sidebar.component";
+import { OptionComponent } from "./pages/settings/option.component";
+import { SettingsPageComponent } from "./pages/settings/settings-page.component";
+import { AutoQueueServiceProvider } from "./services/autoqueue/autoqueue.service";
+import {
+    StreamDispatchService,
+    StreamServiceRegistryProvider,
+} from "./services/base/stream-service.registry";
+import { ModelFileService } from "./services/files/model-file.service";
+import { ViewFileFilterService } from "./services/files/view-file-filter.service";
+import { ViewFileOptionsService } from "./services/files/view-file-options.service";
+import { ViewFileSortService } from "./services/files/view-file-sort.service";
+import { ViewFileService } from "./services/files/view-file.service";
+import { LogService } from "./services/logs/log.service";
+import { ServerCommandServiceProvider } from "./services/server/server-command.service";
+import { ServerStatusService } from "./services/server/server-status.service";
+import { ConfigServiceProvider } from "./services/settings/config.service";
+import { ConnectedService } from "./services/utils/connected.service";
+import { DomService } from "./services/utils/dom.service";
+import { LoggerService } from "./services/utils/logger.service";
+import { NotificationService } from "./services/utils/notification.service";
+import { RestService } from "./services/utils/rest.service";
+import { VersionCheckService } from "./services/utils/version-check.service";
 
-import {AppComponent} from "./pages/main/app.component";
-import {environment} from "../environments/environment";
-import {LoggerService} from "./services/utils/logger.service";
-import {FileListComponent} from "./pages/files/file-list.component";
-import {FileComponent} from "./pages/files/file.component";
-import {ModelFileService} from "./services/files/model-file.service";
-import {ViewFileService} from "./services/files/view-file.service";
-import {FileSizePipe} from "./common/file-size.pipe";
-import {EtaPipe} from "./common/eta.pipe";
-import {CapitalizePipe} from "./common/capitalize.pipe";
-import {ClickStopPropagationDirective} from "./common/click-stop-propagation.directive";
-import {FileOptionsComponent} from "./pages/files/file-options.component";
-import {ViewFileFilterService} from "./services/files/view-file-filter.service";
-import {FilesPageComponent} from "./pages/files/files-page.component";
-import {HeaderComponent} from "./pages/main/header.component";
-import {SidebarComponent} from "./pages/main/sidebar.component";
-import {SettingsPageComponent} from "./pages/settings/settings-page.component";
-import {ServerStatusService} from "./services/server/server-status.service";
-import {ConfigServiceProvider} from "./services/settings/config.service";
-import {OptionComponent} from "./pages/settings/option.component";
-import {NotificationService} from "./services/utils/notification.service";
-import {ServerCommandServiceProvider} from "./services/server/server-command.service";
-import {AutoQueuePageComponent} from "./pages/autoqueue/autoqueue-page.component";
-import {AutoQueueServiceProvider} from "./services/autoqueue/autoqueue.service";
-import {CachedReuseStrategy} from "./common/cached-reuse-strategy";
-import {ConnectedService} from "./services/utils/connected.service";
-import {RestService} from "./services/utils/rest.service";
-import {StreamDispatchService, StreamServiceRegistryProvider} from "./services/base/stream-service.registry";
-import {LogsPageComponent} from "./pages/logs/logs-page.component";
-import {LogService} from "./services/logs/log.service";
-import {AboutPageComponent} from "./pages/about/about-page.component";
-import {ROUTES} from "./routes";
-import {ViewFileOptionsService} from "./services/files/view-file-options.service";
-import {ViewFileSortService} from "./services/files/view-file-sort.service";
-import {DomService} from "./services/utils/dom.service";
-import {StorageServiceModule} from "angular-webstorage-service";
-import {VersionCheckService} from "./services/utils/version-check.service";
-
-@NgModule({ declarations: [
+@NgModule({
+    declarations: [
         FileSizePipe,
         EtaPipe,
         CapitalizePipe,
@@ -61,14 +64,11 @@ import {VersionCheckService} from "./services/utils/version-check.service";
         OptionComponent,
         AutoQueuePageComponent,
         LogsPageComponent,
-        AboutPageComponent
+        AboutPageComponent,
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        FormsModule,
-        RouterModule.forRoot(ROUTES),
-        ModalModule.forRoot(),
-        BootstrapModalModule,
-        StorageServiceModule], providers: [
+    bootstrap: [AppComponent],
+    imports: [BrowserModule, FormsModule, StorageServiceModule, RouterModule],
+    providers: [
         { provide: RouteReuseStrategy, useClass: CachedReuseStrategy },
         LoggerService,
         NotificationService,
@@ -91,19 +91,20 @@ import {VersionCheckService} from "./services/utils/version-check.service";
         ServerCommandServiceProvider,
         // Initialize services not tied to any components
         provideAppInitializer(() => {
-        const initializerFn = (dummyFactory)(inject(ViewFileFilterService));
-        return initializerFn();
-      }),
+            const initializerFn = dummyFactory(inject(ViewFileFilterService));
+            return initializerFn();
+        }),
         provideAppInitializer(() => {
-        const initializerFn = (dummyFactory)(inject(ViewFileSortService));
-        return initializerFn();
-      }),
+            const initializerFn = dummyFactory(inject(ViewFileSortService));
+            return initializerFn();
+        }),
         provideAppInitializer(() => {
-        const initializerFn = (dummyFactory)(inject(VersionCheckService));
-        return initializerFn();
-      }),
+            const initializerFn = dummyFactory(inject(VersionCheckService));
+            return initializerFn();
+        }),
         provideHttpClient(withInterceptorsFromDi()),
-    ] })
+    ],
+})
 export class AppModule {
     constructor(private logger: LoggerService) {
         this.logger.level = environment.logger.level;
@@ -114,6 +115,3 @@ export class AppModule {
 export function dummyFactory(s) {
     return () => null;
 }
-
-// Run the ngx-modialog plugin to work with version 4 of bootstrap
-bootstrap4Mode();

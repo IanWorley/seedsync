@@ -73,7 +73,7 @@ RUN pyinstaller /python/scan_fs.py \
     --exclude-module _bootlocale \
     --name scanfs 
 # Creates environment for angular
-FROM node:12.16 as seedsync_build_angular_env
+FROM node:22.12 as seedsync_build_angular_env
 COPY src/angular/package*.json /app/
 WORKDIR /app
 
@@ -89,7 +89,8 @@ WORKDIR /app
 RUN mkdir -p /build/dist
 
 
-RUN node_modules/@angular/cli/bin/ng build -prod --output-path /build/dist/
+RUN npx ng build --configuration production --output-path /build/dist/
+
 
 # Creates environment to build deb packages
 FROM ubuntu:20.04 as seedsync_build_deb_env

@@ -1,25 +1,30 @@
 import {
     AfterContentChecked,
-    ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener,
-    OnInit, ViewChild, ViewContainerRef
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    OnInit,
+    ViewChild,
+    ViewContainerRef,
 } from "@angular/core";
 
-import {LogService} from "../../services/logs/log.service";
-import {LogRecord} from "../../services/logs/log-record";
-import {StreamServiceRegistry} from "../../services/base/stream-service.registry";
-import {Localization} from "../../common/localization";
-import {DomService} from "../../services/utils/dom.service";
-import {Observable} from "rxjs";
+import { Observable } from "rxjs";
+import { Localization } from "../../common/localization";
+import { StreamServiceRegistry } from "../../services/base/stream-service.registry";
+import { LogRecord } from "../../services/logs/log-record";
+import { LogService } from "../../services/logs/log.service";
+import { DomService } from "../../services/utils/dom.service";
 
 @Component({
     selector: "app-logs-page",
     templateUrl: "./logs-page.component.html",
-    styleUrls: ["./logs-page.component.scss"],
+    styleUrls: ["./logs-page.component.css"],
     providers: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
-
 export class LogsPageComponent implements OnInit, AfterContentChecked {
     public readonly LogRecord = LogRecord;
     public readonly Localization = Localization;
@@ -30,7 +35,7 @@ export class LogsPageComponent implements OnInit, AfterContentChecked {
     @ViewChild("templateConnected") templateConnected;
 
     // Where to insert the cloned content
-    @ViewChild("container", {read: ViewContainerRef}) container;
+    @ViewChild("container", { read: ViewContainerRef }) container;
 
     @ViewChild("logHead") logHead;
     @ViewChild("logTail") logTail;
@@ -40,19 +45,21 @@ export class LogsPageComponent implements OnInit, AfterContentChecked {
 
     private _logService: LogService;
 
-    constructor(private _elementRef: ElementRef,
-                private _changeDetector: ChangeDetectorRef,
-                private _streamRegistry: StreamServiceRegistry,
-                private _domService: DomService) {
+    constructor(
+        private _elementRef: ElementRef,
+        private _changeDetector: ChangeDetectorRef,
+        private _streamRegistry: StreamServiceRegistry,
+        private _domService: DomService
+    ) {
         this._logService = _streamRegistry.logService;
         this.headerHeight = this._domService.headerHeight;
     }
 
     ngOnInit() {
         this._logService.logs.subscribe({
-            next: record => {
+            next: (record) => {
                 this.insertRecord(record);
-            }
+            },
         });
     }
 
@@ -77,9 +84,12 @@ export class LogsPageComponent implements OnInit, AfterContentChecked {
 
     private insertRecord(record: LogRecord) {
         // Scroll down if the log is visible and already scrolled to the bottom
-        const scrollToBottom = this._elementRef.nativeElement.offsetParent != null &&
+        const scrollToBottom =
+            this._elementRef.nativeElement.offsetParent != null &&
             LogsPageComponent.isElementInViewport(this.logTail.nativeElement);
-        this.container.createEmbeddedView(this.templateRecord, {record: record});
+        this.container.createEmbeddedView(this.templateRecord, {
+            record: record,
+        });
         this._changeDetector.detectChanges();
 
         if (scrollToBottom) {
@@ -104,8 +114,14 @@ export class LogsPageComponent implements OnInit, AfterContentChecked {
         return (
             rect.top >= 0 &&
             rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+            rect.bottom <=
+                (window.innerHeight ||
+                    document.documentElement
+                        .clientHeight) /*or $(window).height() */ &&
+            rect.right <=
+                (window.innerWidth ||
+                    document.documentElement
+                        .clientWidth) /*or $(window).width() */
         );
     }
 }

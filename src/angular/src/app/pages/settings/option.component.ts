@@ -1,17 +1,22 @@
-
-import {distinctUntilChanged, debounceTime} from 'rxjs/operators';
-import {Component, Input, Output, ChangeDetectionStrategy, EventEmitter, OnInit} from "@angular/core";
-import {Subject} from "rxjs";
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+} from "@angular/core";
+import { Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 
 @Component({
     selector: "app-option",
     providers: [],
     templateUrl: "./option.component.html",
-    styleUrls: ["./option.component.scss"],
+    styleUrls: ["./option.component.css"],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
-
 export class OptionComponent implements OnInit {
     @Input() type: OptionType;
     @Input() label: string;
@@ -33,10 +38,9 @@ export class OptionComponent implements OnInit {
         // References:
         //      https://angular.io/tutorial/toh-pt6#fix-the-herosearchcomponent-class
         //      https://stackoverflow.com/a/41965515
-        this.newValue.pipe(
-            debounceTime(this.DEBOUNCE_TIME_MS),
-            distinctUntilChanged(),)
-            .subscribe({next: val => this.changeEvent.emit(val)});
+        this.newValue
+            .pipe(debounceTime(this.DEBOUNCE_TIME_MS), distinctUntilChanged())
+            .subscribe({ next: (val) => this.changeEvent.emit(val) });
     }
 
     onChange(value: any) {
@@ -47,5 +51,5 @@ export class OptionComponent implements OnInit {
 export enum OptionType {
     Text,
     Checkbox,
-    Password
+    Password,
 }

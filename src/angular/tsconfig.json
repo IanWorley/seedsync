@@ -18,6 +18,14 @@
     ],
     "module": "es2020",
     "baseUrl": "./",
-    "useDefineForClassFields": false
-  }
+    "useDefineForClassFields": false,
+    "skipLibCheck": true
+
+  },
+
+"angularCompilerOptions": { 
+  "strictTemplates": true
+
+}
+
 }
