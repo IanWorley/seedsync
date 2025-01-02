@@ -1,5 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 import * as Immutable from "immutable";
 
@@ -14,6 +14,7 @@ import {Localization} from "../../common/localization";
     selector: "app-header",
     templateUrl: "./header.component.html",
     styleUrls: ["./header.component.scss"],
+    standalone: false
 })
 
 export class HeaderComponent implements OnInit {

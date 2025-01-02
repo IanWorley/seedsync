@@ -1,6 +1,4 @@
-<div id="top-sidebar"
-     [class.top-sidebar-open]="showSidebar"
-     [class.top-sidebar-closed]="!showSidebar">
+<div id="top-sidebar" [class.top-sidebar-open]="showSidebar" [class.top-sidebar-closed]="!showSidebar">
 
     <div id="logo">
         <span class="image">
@@ -18,10 +16,8 @@
 </div>
 
 <!-- Used for sidebar closing -->
-<div id="outside-sidebar"
-     [class.outside-sidebar-show]="showSidebar"
-     [class.outside-sidebar-hide]="!showSidebar"
-     (click)="showSidebar=false">
+<div id="outside-sidebar" [class.outside-sidebar-show]="showSidebar" [class.outside-sidebar-hide]="!showSidebar"
+    (click)="showSidebar=false">
 </div>
 
 <div id="top-content">

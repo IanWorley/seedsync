@@ -1,4 +1,5 @@
 import {ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy} from "@angular/router";
+import { Injectable } from "@angular/core";
 
 /**
  * CachedReuseStrategy caches Components so that they are not
@@ -6,6 +7,7 @@ import {ActivatedRouteSnapshot, DetachedRouteHandle, RouteReuseStrategy} from "@
  * Source: https://www.softwarearchitekt.at/post/2016/12/02/
  *         sticky-routes-in-angular-2-3-with-routereusestrategy.aspx
  */
+@Injectable()
 export class CachedReuseStrategy implements RouteReuseStrategy {
 
     handlers: {[key: string]: DetachedRouteHandle} = {};

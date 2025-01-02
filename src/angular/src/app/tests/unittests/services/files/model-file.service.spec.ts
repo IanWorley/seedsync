@@ -1,5 +1,5 @@
 import {fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 
 import * as Immutable from "immutable";
 
@@ -7,6 +7,7 @@ import {ModelFileService} from "../../../../services/files/model-file.service";
 import {LoggerService} from "../../../../services/utils/logger.service";
 import {ModelFile} from "../../../../services/files/model-file";
 import {RestService} from "../../../../services/utils/rest.service";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 
 // noinspection JSUnusedLocalSymbols
@@ -19,15 +20,15 @@ describe("Testing model file service", () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [
-                HttpClientTestingModule
-            ],
-            providers: [
-                LoggerService,
-                RestService,
-                ModelFileService
-            ]
-        });
+    imports: [],
+    providers: [
+        LoggerService,
+        RestService,
+        ModelFileService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
         httpMock = TestBed.get(HttpTestingController);
 

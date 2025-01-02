@@ -1,12 +1,12 @@
-import {Injectable, NgZone} from "@angular/core";
-import {Observable} from "rxjs/Observable";
-import EventSource = require("eventsource");
+import { Injectable, NgZone } from "@angular/core";
+import * as EventSource from "eventsource";
+import { Observable } from "rxjs";
 
-import {ModelFileService} from "../files/model-file.service";
-import {ServerStatusService} from "../server/server-status.service";
-import {LoggerService} from "../utils/logger.service";
-import {ConnectedService} from "../utils/connected.service";
-import {LogService} from "../logs/log.service";
+import { ModelFileService } from "../files/model-file.service";
+import { LogService } from "../logs/log.service";
+import { ServerStatusService } from "../server/server-status.service";
+import { ConnectedService } from "../utils/connected.service";
+import { LoggerService } from "../utils/logger.service";
 
 
 export class EventSourceFactory {

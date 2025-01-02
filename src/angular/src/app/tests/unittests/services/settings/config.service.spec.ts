@@ -1,5 +1,5 @@
 import {fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 
 import * as Immutable from "immutable";
 
@@ -10,6 +10,7 @@ import {MockStreamServiceRegistry} from "../../../mocks/mock-stream-service.regi
 import {ConnectedService} from "../../../../services/utils/connected.service";
 import {RestService} from "../../../../services/utils/rest.service";
 import {StreamServiceRegistry} from "../../../../services/base/stream-service.registry";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 
 // noinspection JSUnusedLocalSymbols
@@ -23,17 +24,17 @@ describe("Testing config service", () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [
-                HttpClientTestingModule
-            ],
-            providers: [
-                ConfigService,
-                LoggerService,
-                RestService,
-                ConnectedService,
-                {provide: StreamServiceRegistry, useClass: MockStreamServiceRegistry}
-            ]
-        });
+    imports: [],
+    providers: [
+        ConfigService,
+        LoggerService,
+        RestService,
+        ConnectedService,
+        { provide: StreamServiceRegistry, useClass: MockStreamServiceRegistry },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
 
         mockRegistry = TestBed.get(StreamServiceRegistry);
         httpMock = TestBed.get(HttpTestingController);

@@ -1,8 +1,9 @@
 import {fakeAsync, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 
 import {LoggerService} from "../../../../services/utils/logger.service";
 import {RestService} from "../../../../services/utils/rest.service";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 
 
@@ -13,14 +14,14 @@ describe("Testing rest service", () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [
-                HttpClientTestingModule
-            ],
-            providers: [
-                RestService,
-                LoggerService,
-            ]
-        });
+    imports: [],
+    providers: [
+        RestService,
+        LoggerService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+    ]
+});
         httpMock = TestBed.get(HttpTestingController);
 
         restService = TestBed.get(RestService);

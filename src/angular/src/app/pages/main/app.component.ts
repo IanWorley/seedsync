@@ -1,14 +1,15 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import {NavigationEnd, Router} from "@angular/router";
-import {ROUTE_INFOS, RouteInfo} from "../../routes";
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { NavigationEnd, Router } from "@angular/router";
+import { ROUTE_INFOS, RouteInfo } from "../../routes";
 
-import {ElementQueries, ResizeSensor} from "css-element-queries";
-import {DomService} from "../../services/utils/dom.service";
+import { ElementQueries, ResizeSensor } from "css-element-queries";
+import { DomService } from "../../services/utils/dom.service";
 
 @Component({
     selector: "app-root",
     templateUrl: "./app.component.html",
-    styleUrls: ["./app.component.scss"]
+    styleUrls: ["./app.component.scss"],
+    standalone: false
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild("topHeader") topHeader: ElementRef;

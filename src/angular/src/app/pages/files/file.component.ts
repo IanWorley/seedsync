@@ -14,7 +14,8 @@ import {ViewFileOptions} from "../../services/files/view-file-options";
     providers: [],
     templateUrl: "./file.component.html",
     styleUrls: ["./file.component.scss"],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class FileComponent implements OnChanges {
