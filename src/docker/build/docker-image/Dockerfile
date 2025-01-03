@@ -3,7 +3,7 @@ ARG STAGING_VERSION=latest
 
 # Creates environment to run Seedsync python code
 # Installs all python dependencies
-FROM  python:3.11-slim as seedsync_run_python_env
+FROM  python:3.8-slim as seedsync_run_python_env
 
 # Install dependencies
 RUN [ -f /etc/apt/sources.list ] || echo 'deb http://deb.debian.org/debian bullseye main' > /etc/apt/sources.list && \
